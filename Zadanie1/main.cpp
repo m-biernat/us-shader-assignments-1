@@ -157,7 +157,7 @@ void initGL()
 **------------------------------------------------------------------------------------------*/
 void setupShaders()
 {
-	if (!setupShaders("shaders/vertex.shader", "shaders/fragment.shader", shaderProgram))
+	if (!setupShaders("shaders/vertex.vert", "shaders/fragment.frag", shaderProgram))
 		exit(3);
 
 	vertexLoc = glGetAttribLocation(shaderProgram, "vPosition");

@@ -18,8 +18,8 @@
     <ClInclude Include="shaders.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragment.shader" />
-    <None Include="shaders\vertex.shader" />
+    <None Include="shaders\fragment.frag" />
+    <None Include="shaders\vertex.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
