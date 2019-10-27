@@ -5,16 +5,18 @@
 
 #include "shaders.h"
 
+#define WARIANT 'A'
+//#define WARIANT 'B'
+
 constexpr int WIDTH = 600; // szerokosc okna
 constexpr int HEIGHT = 600; // wysokosc okna
-constexpr int VAOS = 2; // liczba VAO
-constexpr int VBOS = 3; // liczba VBO
+constexpr int VAOS = 4; // liczba VAO
+constexpr int VBOS = 4; // liczba VBO
 
 //******************************************************************************************
 GLuint shaderProgram; // identyfikator programu cieniowania
 
 GLuint vertexLoc; // lokalizacja atrybutu wierzcholka - wspolrzedne
-GLuint colorLoc; // lokalizacja atrybutu wierzcholka - kolor
 
 GLuint vao[VAOS]; // identyfikatory VAO
 GLuint buffers[VBOS]; // identyfikatory VBO
@@ -44,7 +46,10 @@ int main(int argc, char* argv[])
 
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // incicjacja profilu rdzennego
 
-	window = glfwCreateWindow(WIDTH, HEIGHT, "OGL+GLSL Template", nullptr, nullptr); // utworzenie okna i zwiazanego z nim kontekstu
+	std::string name = "Zadanie2 ";
+	name.push_back(WARIANT);
+
+	window = glfwCreateWindow(WIDTH, HEIGHT, name.c_str(), nullptr, nullptr); // utworzenie okna i zwiazanego z nim kontekstu
 	if (!window)
 	{
 		glfwTerminate(); // konczy dzialanie biblioteki GLFW
@@ -147,11 +152,17 @@ void initGL()
 **------------------------------------------------------------------------------------------*/
 void setupShaders()
 {
-	if (!setupShaders("shaders/vertex.vert", "shaders/fragment.frag", shaderProgram))
+#if WARIANT == 'A'
+	if (!setupShaders("shaders/vertex_a.vert", "shaders/fragment_a.frag", shaderProgram))
 		exit(3);
+#endif
+
+#if WARIANT == 'B'
+	if (!setupShaders("shaders/vertex_b.vert", "shaders/fragment_b.frag", shaderProgram))
+		exit(3);
+#endif
 
 	vertexLoc = glGetAttribLocation(shaderProgram, "vPosition");
-	colorLoc = glGetAttribLocation(shaderProgram, "vColor");
 }
 
 /*------------------------------------------------------------------------------------------
@@ -162,55 +173,25 @@ void setupBuffers()
 	glGenVertexArrays(VAOS, vao); // generowanie identyfikatora VAO
 	glGenBuffers(VBOS, buffers); // generowanie identyfikatorow VBO
 
-	// wspolrzedne wierzcholkow trojkata
-	float vertices[] =
+	// wspolrzedne wierzcholkow
+	float vertices[4][16] =
 	{
-		0.1f, 0.0f, 0.0f, 1.0f,
-		0.9f, -0.5f, 0.0f, 1.0f,
-		0.9f, 0.5f, 0.0f, 1.0f
+		{ -0.9f, 0.9f, 0.0f, 1.0f, -0.05f, 0.9f, 0.0f, 1.0f, -0.9f, 0.05f, 0.0f, 1.0f, -0.05f, 0.05f, 0.0f, 1.0f },
+		{ 0.05f, 0.9f, 0.0f, 1.0f, 0.9f, 0.9f, 0.0f, 1.0f, 0.05f, 0.05f, 0.0f, 1.0f, 0.9f, 0.05f, 0.0f, 1.0f },
+		{ -0.9f, -0.05f, 0.0f, 1.0f, -0.05f, -0.05f, 0.0f, 1.0f, -0.9f, -0.9f, 0.0f, 1.0f, -0.05f, -0.9f, 0.0f, 1.0f },
+		{ 0.05f, -0.05f, 0.0f, 1.0f, 0.9f, -0.05f, 0.0f, 1.0f, 0.05f, -0.9f, 0.0f, 1.0f, 0.9f, -0.9f, 0.0f, 1.0f }
 	};
 
-	// kolory wierzchokow trojkata
-	std::vector<float> colors
+	for (int i = 0; i < 4; i++)
 	{
-		1.0f, 0.0f, 0.0f, 1.0f,
-		0.0f, 1.0f, 0.0f, 1.0f,
-		0.0f, 0.0f, 1.0f, 1.0f
-	};
+		glBindVertexArray(vao[i]); // dowiazanie i-tego VAO    	
 
-	glBindVertexArray(vao[0]); // dowiazanie pierwszego VAO    	
-
-	// VBO dla wspolrzednych wierzcholkow
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(vertexLoc); // wlaczenie tablicy atrybutu wierzcholka - wspolrzedne
-	glVertexAttribPointer(vertexLoc, 4, GL_FLOAT, GL_FALSE, 0, 0); // zdefiniowanie danych tablicy atrybutu wierzchoka - wspolrzedne
-
-	// VBO dla kolorow
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
-	glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), reinterpret_cast<GLfloat*>(&colors[0]), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(colorLoc); // wlaczenie tablicy atrybutu wierzcholka - kolory
-	glVertexAttribPointer(colorLoc, 4, GL_FLOAT, GL_FALSE, 0, 0); // zdefiniowanie danych tablicy atrybutu wierzcholka - kolory
-
-	// wspolrzedne i kolory kwadratu (x, y, z, w, r, g, b, a)
-	float verticesAndColors[] =
-	{
-		-0.9f, 0.4f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-		-0.9f, -0.4f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		-0.1f, 0.4f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		-0.1f, -0.4f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f
-	};
-
-	glBindVertexArray(vao[1]);
-	// VBO dla wspolrzednych i kolorow
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[2]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesAndColors), verticesAndColors, GL_STATIC_DRAW);
-
-	int stride = 8 * sizeof(float);
-	glEnableVertexAttribArray(vertexLoc);
-	glVertexAttribPointer(vertexLoc, 4, GL_FLOAT, GL_FALSE, stride, 0); // wspolrzedne wierzcholkow
-	glEnableVertexAttribArray(colorLoc);
-	glVertexAttribPointer(colorLoc, 4, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<const void*>(4 * sizeof(float))); // kolory wierzcholkow
+		// VBO dla wspolrzednych wierzcholkow
+		glBindBuffer(GL_ARRAY_BUFFER, buffers[i]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices[i]), vertices[i], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(vertexLoc); // wlaczenie tablicy atrybutu wierzcholka - wspolrzedne
+		glVertexAttribPointer(vertexLoc, 4, GL_FLOAT, GL_FALSE, 0, 0); // zdefiniowanie danych tablicy atrybutu wierzchoka - wspolrzedne
+	}
 
 	glBindVertexArray(0);
 }
@@ -224,13 +205,11 @@ void renderScene()
 
 	glUseProgram(shaderProgram); // wlaczenie programu cieniowania
 
-	// wyrysowanie pierwszego VAO (trojkat)
-	glBindVertexArray(vao[0]);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-
-	// wyrysowanie dugiego VAO (kwadrat)
-	glBindVertexArray(vao[1]);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	for (int i = 0; i < 4; i++)
+	{
+		glBindVertexArray(vao[i]);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	}
 
 	glBindVertexArray(0);
 }
