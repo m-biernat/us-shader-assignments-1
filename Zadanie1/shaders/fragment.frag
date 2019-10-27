@@ -1,10 +1,10 @@
 #version 330
 
-in vec4 color; // kolor interpolowany z shadera wierzcholkow
+uniform vec4 fColor;
 
-out vec4 fColor; // wyjsciowy kolor fragmentu
+out vec4 color; // wyjsciowy kolor fragmentu
 
 void main()
 {
-	fColor = color;
+	color = fColor;
 }

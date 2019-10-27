@@ -5,8 +5,10 @@
 
 #include "shaders.h"
 
-#define WARIANT 'A'
-//#define WARIANT 'B'
+
+const char VARIANT = 'A';
+//const char VARIANT = 'B';
+
 
 constexpr int WIDTH = 600; // szerokosc okna
 constexpr int HEIGHT = 600; // wysokosc okna
@@ -47,7 +49,7 @@ int main(int argc, char* argv[])
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // incicjacja profilu rdzennego
 
 	std::string name = "Zadanie2 ";
-	name.push_back(WARIANT);
+	name.push_back(VARIANT);
 
 	window = glfwCreateWindow(WIDTH, HEIGHT, name.c_str(), nullptr, nullptr); // utworzenie okna i zwiazanego z nim kontekstu
 	if (!window)
@@ -152,15 +154,17 @@ void initGL()
 **------------------------------------------------------------------------------------------*/
 void setupShaders()
 {
-#if WARIANT == 'A'
-	if (!setupShaders("shaders/vertex_a.vert", "shaders/fragment_a.frag", shaderProgram))
-		exit(3);
-#endif
+	if (VARIANT == 'A')
+	{
+		if (!setupShaders("shaders/vertex_a.vert", "shaders/fragment_a.frag", shaderProgram))
+			exit(3);
+	}
 
-#if WARIANT == 'B'
-	if (!setupShaders("shaders/vertex_b.vert", "shaders/fragment_b.frag", shaderProgram))
-		exit(3);
-#endif
+	else if (VARIANT == 'B')
+	{
+		if (!setupShaders("shaders/vertex_b.vert", "shaders/fragment_b.frag", shaderProgram))
+			exit(3);
+	}
 
 	vertexLoc = glGetAttribLocation(shaderProgram, "vPosition");
 }

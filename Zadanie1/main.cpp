@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+
 #include "shaders.h"
 
 
@@ -10,19 +11,19 @@ const int SIDE_COUNT = 6;
 const float RADIUS = 0.8f;
 
 const float OBJ_COLOR[] = { 0.53f, 0.12f, 0.12f, 1.0f };	// Kolor rysowanego obiektu
-const float BG_COLOR[] = { 0.59f, 0.74f, 0.78f, 1.0f };	// Kolor tla
+const float BG_COLOR[] = { 0.59f, 0.74f, 0.78f, 1.0f };		// Kolor tla
 
 
 constexpr int WIDTH = 600; // szerokosc okna
 constexpr int HEIGHT = 600; // wysokosc okna
 constexpr int VAOS = 1; // liczba VAO
-constexpr int VBOS = 2; // liczba VBO
+constexpr int VBOS = 1; // liczba VBO
 
 //******************************************************************************************
 GLuint shaderProgram; // identyfikator programu cieniowania
 
 GLuint vertexLoc; // lokalizacja atrybutu wierzcholka - wspolrzedne
-GLuint colorLoc; // lokalizacja atrybutu wierzcholka - kolor
+GLuint colorLoc; // lokalizacja atrybutu fragmentu - kolor
 
 GLuint vao[VAOS]; // identyfikatory VAO
 GLuint buffers[VBOS]; // identyfikatory VBO
@@ -160,8 +161,10 @@ void setupShaders()
 	if (!setupShaders("shaders/vertex.vert", "shaders/fragment.frag", shaderProgram))
 		exit(3);
 
+	glUseProgram(shaderProgram);
+
 	vertexLoc = glGetAttribLocation(shaderProgram, "vPosition");
-	colorLoc = glGetAttribLocation(shaderProgram, "vColor");
+	colorLoc = glGetUniformLocation(shaderProgram, "fColor");
 }
 
 /*------------------------------------------------------------------------------------------
@@ -186,7 +189,7 @@ void renderScene()
 
 	glUseProgram(shaderProgram); // wlaczenie programu cieniowania
 
-	// wyrysowanie pierwszego VAO (trojkat)
+	// wyrysowanie pierwszego VAO
 	glBindVertexArray(vao[0]);
 	glDrawArrays(GL_TRIANGLE_FAN, 0, SIDE_COUNT);
 
@@ -201,7 +204,7 @@ void generatePolygon(int sideCount, float radius)
 
 	float vertPos[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
-	std::vector<float> vertices, colors;
+	std::vector<float> vertices;
 
 	for (int i = 0; i < sideCount; i++)
 	{
@@ -214,7 +217,6 @@ void generatePolygon(int sideCount, float radius)
 		//std::cout << "vert_" << i << ": [" << vertPos[0] << ", " << vertPos[1] << "]" << std::endl;
 
 		vertices.insert(vertices.end(), std::begin(vertPos), std::end(vertPos));
-		colors.insert(colors.end(), std::begin(OBJ_COLOR), std::end(OBJ_COLOR));
 
 		currAngle += incrAngle;
 	}
@@ -227,9 +229,5 @@ void generatePolygon(int sideCount, float radius)
 	glEnableVertexAttribArray(vertexLoc); // wlaczenie tablicy atrybutu wierzcholka - wspolrzedne
 	glVertexAttribPointer(vertexLoc, 4, GL_FLOAT, GL_FALSE, 0, 0); // zdefiniowanie danych tablicy atrybutu wierzchoka - wspolrzedne
 
-	// VBO dla kolorow
-	glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
-	glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(float), reinterpret_cast<GLfloat*>(&colors[0]), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(colorLoc); // wlaczenie tablicy atrybutu wierzcholka - kolory
-	glVertexAttribPointer(colorLoc, 4, GL_FLOAT, GL_FALSE, 0, 0); // zdefiniowanie danych tablicy atrybutu wierzcholka - kolory
+	glUniform4fv(colorLoc, 1, OBJ_COLOR);
 }
