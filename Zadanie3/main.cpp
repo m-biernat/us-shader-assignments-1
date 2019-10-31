@@ -1,4 +1,6 @@
-﻿#include <GL/glew.h>
+﻿// Michal Biernat INZ III PGK 1 - Wprowadzenie do Shaderow - Zestaw 1 Zad. 3
+
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <vector>
@@ -159,7 +161,7 @@ void setupShaders()
 
 	vertexLoc = glGetAttribLocation(shaderProgram, "vPosition");
 	
-	glUseProgram(shaderProgram);
+	glUseProgram(shaderProgram); // uruchamiam tutaj, zeby dzialalo z uniformem
 	angleLoc = glGetUniformLocation(shaderProgram, "angle");
 }
 
@@ -201,8 +203,6 @@ void setupBuffers()
 void renderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT); // czyszczenie bufora koloru
-
-	glUseProgram(shaderProgram); // wlaczenie programu cieniowania
 
 	// wyrysowanie pierwszego VAO
 	glBindVertexArray(vao[0]);

@@ -1,9 +1,18 @@
-﻿#include <GL/glew.h>
+﻿// Michal Biernat INZ III PGK 1 - Wprowadzenie do Shaderow - Zestaw 1 Zad. 2
+
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <vector>
 
 #include "shaders.h"
+
+
+// W wariancie A, program cieniujacy ustala kolor wierzcholka ktory lezy w danym regionie
+// Informacja o kolorze wierzcholka przekazywana jest do shadera fragmentow, ktory koloruje obiekt
+// Kolor jest interpolowany pomiedzy wierzcholkami. [Sa plynne przejscia między kolorami]
+// W wariancie B, shader fragmentow sprawdza bezposrednio w jakim regionie znajduje sie piksel
+// i na tej podstawie ustala jego kolor. [Tutaj nie ma plynnych przejsc między kolorami]
 
 
 const char VARIANT = 'A';

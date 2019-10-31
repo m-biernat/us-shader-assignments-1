@@ -1,4 +1,6 @@
-﻿#include <GL/glew.h>
+﻿// Michal Biernat INZ III PGK 1 - Wprowadzenie do Shaderow - Zestaw 1 Zad. 1
+
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <vector>
@@ -163,7 +165,7 @@ void setupShaders()
 
 	vertexLoc = glGetAttribLocation(shaderProgram, "vPosition");
 
-	glUseProgram(shaderProgram);
+	glUseProgram(shaderProgram); // uruchamiam tutaj, zeby dzialalo z uniformem
 	colorLoc = glGetUniformLocation(shaderProgram, "fColor");
 }
 
@@ -187,8 +189,6 @@ void renderScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT); // czyszczenie bufora koloru
 
-	glUseProgram(shaderProgram); // wlaczenie programu cieniowania
-
 	// wyrysowanie pierwszego VAO
 	glBindVertexArray(vao[0]);
 	glDrawArrays(GL_TRIANGLE_FAN, 0, SIDE_COUNT);
@@ -208,7 +208,7 @@ void generatePolygon(int sideCount, float radius)
 
 	for (int i = 0; i < sideCount; i++)
 	{
-		vertPos[0] = radius * sin(currAngle);
+		vertPos[0] = radius * sin(currAngle); // Zamienilem x z y, zeby ladniej wygladalo (zaczyna od godziny 12)
 		vertPos[1] = radius * cos(currAngle);
 
 		vertPos[0] = round(vertPos[0] * 100) / 100;
